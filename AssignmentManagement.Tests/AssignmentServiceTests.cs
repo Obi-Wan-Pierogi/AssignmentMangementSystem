@@ -20,9 +20,37 @@
             var result = service.ListIncomplete();
 
             // Assert
-            // This will fail until students implement ListIncomplete()
             Assert.Single(result);
             Assert.Equal("Incomplete Task", result[0].Title);
+        }
+
+        [Fact]
+        public void ListIsEmpty_ShouldReturnEmptyListWhenNoAssignments()
+        {
+            // Arrange
+            var service = new AssignmentService();
+            // Act
+            var result = service.ListAll();
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void ListAll_ShouldReturnAllAssignments()
+        {
+            // Arrange
+            var service = new AssignmentService();
+            var a1 = new Assignment("Task 1", "Description 1");
+            var a2 = new Assignment("Task 2", "Description 2");
+            a1.MarkComplete(); 
+            service.AddAssignment(a1);
+            service.AddAssignment(a2);
+            // Act
+            var result = service.ListAll();
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, a => a.Title == "Task 1");
+            Assert.Contains(result, a => a.Title == "Task 2");
         }
     }
 }
