@@ -22,7 +22,7 @@
 
             // Assert
             var singleResult = Assert.Single(result);
-            Assert.Single("Incomplete Task", singleResult.Title);
+            Assert.Equal("Incomplete Task", singleResult.Title);
             Assert.False(singleResult.IsCompleted);
         }
 
