@@ -5,11 +5,11 @@ namespace AssignmentManagement.UI
 {
     public class ConsoleUI
     {
-        private readonly AssignmentService _assignmentService;
+        private readonly IAssignmentService _assignmentService;
 
-        public ConsoleUI(AssignmentService assignmentService)
+        public ConsoleUI(IAssignmentService assignmentService)
         {
-            _assignmentService = assignmentService;
+            _assignmentService = assignmentService ?? throw new ArgumentNullException(nameof(assignmentService));
         }
 
         public void Run()
@@ -61,7 +61,7 @@ namespace AssignmentManagement.UI
             }
         }
 
-        private void AddAssignment()
+        internal void AddAssignment()
         {
             Console.Write("Enter assignment title: ");
             var title = Console.ReadLine();
@@ -86,7 +86,7 @@ namespace AssignmentManagement.UI
             }
         }
 
-        private void ListAllAssignments()
+        internal void ListAllAssignments()
         {
             var assignments = _assignmentService.ListAll();
             if (assignments.Count == 0)
@@ -94,14 +94,15 @@ namespace AssignmentManagement.UI
                 Console.WriteLine("No assignments found.");
                 return;
             }
-
+            Console.WriteLine("\n--- All Assignments ---");
             foreach (var assignment in assignments)
             {
                 Console.WriteLine($"- {assignment.Title}: {assignment.Description} (Completed: {assignment.IsCompleted})");
             }
+            Console.WriteLine("-----------------------");
         }
 
-        private void ListIncompleteAssignments()
+        internal void ListIncompleteAssignments()
         {
             var assignments = _assignmentService.ListIncomplete();
             if (assignments.Count == 0)
@@ -109,14 +110,15 @@ namespace AssignmentManagement.UI
                 Console.WriteLine("No incomplete assignments found.");
                 return;
             }
-
+            Console.WriteLine("\n--- Incomplete Assignments ---");
             foreach (var assignment in assignments)
             {
                 Console.WriteLine($"- {assignment.Title}: {assignment.Description} (Completed: {assignment.IsCompleted})");
             }
+            Console.WriteLine("----------------------------");
         }
 
-        private void MarkAssignmentComplete()
+        internal void MarkAssignmentComplete()
         {
             Console.Write("Enter the title of the assignment to mark complete: ");
             var title = Console.ReadLine();
@@ -130,7 +132,7 @@ namespace AssignmentManagement.UI
             }
         }
 
-        private void SearchAssignmentByTitle()
+        internal void SearchAssignmentByTitle()
         {
             Console.Write("Enter the title to search: ");
             var title = Console.ReadLine();
@@ -142,11 +144,13 @@ namespace AssignmentManagement.UI
             }
             else
             {
+                Console.WriteLine($"\n--- Found Assignment ---");
                 Console.WriteLine($"Found: {assignment.Title}: {assignment.Description} (Completed: {assignment.IsCompleted})");
+                Console.WriteLine($"----------------------");
             }
         }
 
-        private void UpdateAssignment()
+        internal void UpdateAssignment()
         {
             Console.Write("Enter the current title of the assignment: ");
             var oldTitle = Console.ReadLine();
@@ -165,7 +169,7 @@ namespace AssignmentManagement.UI
             }
         }
 
-        private void DeleteAssignment()
+        internal void DeleteAssignment()
         {
             Console.Write("Enter the title of the assignment to delete: ");
             var title = Console.ReadLine();
