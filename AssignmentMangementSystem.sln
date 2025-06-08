@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignmentManagement.Consol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignmentManagement.UI", "AssignmentManagement.UI\AssignmentManagement.UI.csproj", "{8179261C-9683-4647-92A6-85BD13788782}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignmentManagement.WebAPI", "AssignmentManagement.WebAPI\AssignmentManagement.WebAPI.csproj", "{8D61E2AC-4E27-468D-BB21-0EB731B7F3C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8179261C-9683-4647-92A6-85BD13788782}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8179261C-9683-4647-92A6-85BD13788782}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8179261C-9683-4647-92A6-85BD13788782}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D61E2AC-4E27-468D-BB21-0EB731B7F3C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D61E2AC-4E27-468D-BB21-0EB731B7F3C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D61E2AC-4E27-468D-BB21-0EB731B7F3C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D61E2AC-4E27-468D-BB21-0EB731B7F3C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
