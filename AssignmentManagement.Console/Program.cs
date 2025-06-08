@@ -1,8 +1,7 @@
-﻿using AssignmentManagement.Core;
+﻿using AssignmentManagement.Core.Interfaces;
+using AssignmentManagement.Core.Services;
 using AssignmentManagement.UI;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using System;
 
 namespace AssignmentManagement.Console
@@ -13,13 +12,28 @@ namespace AssignmentManagement.Console
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<AssignmentService>();
+            services.AddSingleton<IAssignmentService, AssignmentService>();
+            services.AddSingleton<ConsoleUI>();
+            services.AddSingleton<IAppLogger, ConsoleAppLogger>();
+            services.AddSingleton<IAssignmentFormatter, AssignmentFormatter>();
             services.AddSingleton<ConsoleUI>();
 
             var serviceProvider = services.BuildServiceProvider();
-            var consoleUI = serviceProvider.GetRequiredService<ConsoleUI>();
+            var logger = serviceProvider.GetRequiredService<IAppLogger>();
 
-            consoleUI.Run();
+            logger.LogInformation("Application starting...");
+            try
+            {
+                var consoleUI = serviceProvider.GetRequiredService<ConsoleUI>();
+                consoleUI.Run();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("An unhandled exception occurred in Main");
+                System.Console.WriteLine($"An error occurred: {ex.Message}");
+                System.Console.WriteLine(ex.StackTrace);
+            }
+            logger.LogInformation("Application finished.");
         }
     }
 }
