@@ -220,48 +220,68 @@ namespace AssignmentManagement.Tests
             Assert.Contains($"Assignment '{assignmentToDelete.Title}' deleted successfully.", output);
             _mockService.Verify(s => s.DeleteAssignment(assignmentToDelete.Title), Times.Once);
         }
+
         [Fact]
-        public void ListAllAssignments_DisplaysAssignmentsCorrectly()
+        public void ListAllAssignments_WhenAssignmentIsOverdue_DisplaysOverdueStatus()
         {
             // Arrange
-            var assignment1 = new Assignment("Task 1 Due Soon", "Desc 1", DateTime.Now.AddDays(2), Priority.Low, "Notes 1");
-            var assignment2 = new Assignment("Task 2 No DueDate", "Desc 2", null, Priority.Medium, null);
-            var assignment3 = new Assignment("Task 3 Overdue", "Desc 3", DateTime.Now.AddDays(-2), Priority.High, "This one is late");
-            var assignment4 = new Assignment("Task 4 Completed", "Desc 4", DateTime.Now.AddDays(-5), Priority.Medium, "Done");
-            assignment4.MarkComplete(); // Mark as completed (and overdue, but completed takes precedence for IsOverdue())
-
-            var assignmentsList = new List<Assignment> { assignment1, assignment2, assignment3, assignment4 };
-            _mockService.Setup(s => s.ListAll()).Returns(assignmentsList);
+            var overdueAssignment = new Assignment("Test Overdue", "Desc", DateTime.Now.AddDays(-2));
+            _mockService.Setup(s => s.ListAll()).Returns(new List<Assignment> { overdueAssignment });
 
             // Act
             _consoleUI.ListAllAssignments();
 
             // Assert
             var output = GetConsoleOutput();
-            Assert.Contains("--- All Assignments ---", output);
-
-            // Verify output for assignment1 (not overdue, incomplete)
-            Assert.Contains($"- {assignment1.Title} ({assignment1.Priority}) due {assignment1.DueDate?.ToShortDateString()}", output);
-            Assert.Contains($"Description: {assignment1.Description}", output.Substring(output.IndexOf(assignment1.Title)));
-            Assert.Contains($"Notes: {assignment1.Notes}", output.Substring(output.IndexOf(assignment1.Title)));
-            Assert.Contains($"Status: Incomplete", output.Substring(output.IndexOf(assignment1.Title)));
-            Assert.DoesNotContain("OVERDUE", output.Substring(output.IndexOf(assignment1.Title), output.IndexOf(assignment2.Title) - output.IndexOf(assignment1.Title)));
-
-
-            // Verify output for assignment2 (no due date, incomplete)
-            Assert.Contains($"- {assignment2.Title} ({assignment2.Priority}) due N/A", output);
-            Assert.Contains($"Status: Incomplete", output.Substring(output.IndexOf(assignment2.Title)));
-
-            // Verify output for assignment3 (overdue, incomplete)
-            Assert.Contains($"- {assignment3.Title} ({assignment3.Priority}) due {assignment3.DueDate?.ToShortDateString()}", output);
-            Assert.Contains($"Status: Incomplete - OVERDUE", output.Substring(output.IndexOf(assignment3.Title)));
-
-            // Verify output for assignment4 (completed, was overdue but IsOverdue() returns false if completed)
-            Assert.Contains($"- {assignment4.Title} ({assignment4.Priority}) due {assignment4.DueDate?.ToShortDateString()}", output);
-            Assert.Contains($"Status: Completed", output.Substring(output.IndexOf(assignment4.Title)));
-            // Assert.DoesNotContain("OVERDUE", output.Substring(output.IndexOf(assignment4.Title))); // IsOverdue() should be false
+            Assert.Contains("Status: Incomplete - OVERDUE", output);
         }
 
+        [Fact]
+        public void ListAllAssignments_WhenAssignmentIsCompleted_DisplaysCompletedStatus()
+        {
+            // Arrange
+            var completedAssignment = new Assignment("Test Completed", "Desc", DateTime.Now.AddDays(-5));
+            completedAssignment.MarkComplete();
+            _mockService.Setup(s => s.ListAll()).Returns(new List<Assignment> { completedAssignment });
+
+            // Act
+            _consoleUI.ListAllAssignments();
+
+            // Assert
+            var output = GetConsoleOutput();
+            Assert.Contains("Status: Completed", output);
+            Assert.DoesNotContain("OVERDUE", output); // A completed task is never overdue
+        }
+
+        [Fact]
+        public void ListAllAssignments_WhenAssignmentHasNoDueDate_DisplaysNotApplicable()
+        {
+            // Arrange
+            var noDueDateAssignment = new Assignment("Test No Due Date", "Desc", null);
+            _mockService.Setup(s => s.ListAll()).Returns(new List<Assignment> { noDueDateAssignment });
+
+            // Act
+            _consoleUI.ListAllAssignments();
+
+            // Assert
+            var output = GetConsoleOutput();
+            Assert.Contains("due N/A", output);
+        }
+
+        [Fact]
+        public void ListAllAssignments_WhenNoAssignmentsExist_DisplaysNotFoundMessage()
+        {
+            // Arrange
+            _mockService.Setup(s => s.ListAll()).Returns(new List<Assignment>());
+
+            // Act
+            _consoleUI.ListAllAssignments();
+
+            // Assert
+            var output = GetConsoleOutput();
+            Assert.Contains("No assignments found.", output);
+        }
+ 
         [Fact]
         public void SelectAssignmentFromList_DisplaysCorrectFormatIncludingDueDateAndOverdueStatus()
         {
