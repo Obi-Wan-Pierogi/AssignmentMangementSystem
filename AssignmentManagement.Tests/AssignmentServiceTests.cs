@@ -73,6 +73,29 @@
             Assert.Contains(result, a => a.Title == "Task 2");
         }
 
+        [Fact]
+        public void UpdateAssignment_WhenSuccessful_ShouldChangeTitleAndDescription()
+        {
+            // Arrange
+            var originalAssignment = new Assignment("Old Title", "Old Desc", null);
+            _service.AddAssignment(originalAssignment);
+            var newTitle = "New Title";
+            var newDesc = "New Desc";
+
+            // Act
+            var result = _service.UpdateAssignment("Old Title", newTitle, newDesc);
+            var updatedAssignment = _service.FindAssignmentByTitle(newTitle);
+            var oldAssignment = _service.FindAssignmentByTitle("Old Title");
+
+
+            // Assert
+            Assert.True(result);
+            Assert.Null(oldAssignment); // The old key should be gone
+            Assert.NotNull(updatedAssignment);
+            Assert.Equal(newTitle, updatedAssignment.Title);
+            Assert.Equal(newDesc, updatedAssignment.Description);
+        }
+
         // A minimal stub for IAssignmentFormatter
         public class StubAssignmentFormatter : IAssignmentFormatter
         {

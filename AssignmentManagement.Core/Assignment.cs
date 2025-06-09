@@ -18,7 +18,10 @@ namespace AssignmentManagement.Core
         public Priority Priority { get; }
         public string Notes { get; private set; }
 
-        // Constructor for JSON deserialization
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Assignment"/> class for JSON deserialization.
+        /// This constructor is intended for use by serialization libraries.
+        /// </summary>
         [JsonConstructor]
         public Assignment(int id, string title, string description, DateTime? dueDate, bool isCompleted, Priority priority = Priority.Medium, string notes = null)
         {
@@ -34,7 +37,10 @@ namespace AssignmentManagement.Core
             Notes = notes;
         }
 
-        // Constructor for new assignments
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Assignment"/> class for creating a new assignment.
+        /// A unique ID will be generated automatically.
+        /// </summary>
         public Assignment(string title, string description, DateTime? dueDate, Priority priority = Priority.Medium, string notes = null)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -48,7 +54,12 @@ namespace AssignmentManagement.Core
             Priority = priority;
             Notes = notes;
         }
-        
+
+        /// <summary>
+        /// Updates the title and description of the assignment.
+        /// </summary>
+        /// <param name="newTitle">The new title for the assignment.</param>
+        /// <param name="newDescription">The new description for the assignment.</param>
         public void Update(string newTitle, string newDescription)
         {
             Validate(newTitle, nameof(newTitle));
@@ -58,11 +69,20 @@ namespace AssignmentManagement.Core
             Description = newDescription;
         }
 
+        /// <summary>
+        /// Marks the assignment as complete.
+        /// </summary>
         public void MarkComplete()
         {
             IsCompleted = true;
         }
 
+        /// <summary>
+        /// Determines if the assignment is overdue.
+        /// An assignment is considered overdue if it is not complete and its due date is in the past.
+        /// </summary>
+        /// <param name="logger">The logger instance for recording evaluation details.</param>
+        /// <returns>True if the assignment is overdue; otherwise, false.</returns>
         public bool IsOverdue(IAppLogger logger)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger)); // Basic null check

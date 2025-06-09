@@ -62,6 +62,8 @@ namespace AssignmentManagement.UI
         internal void AddAssignment()
         {
             _logger.LogInformation("Attempting to add a new assignment via ConsoleUI.");
+
+            // --- Get User Input ---
             Console.Write("Enter assignment title: ");
             var title = Console.ReadLine();
             Console.Write("Enter assignment description: ");
@@ -71,6 +73,7 @@ namespace AssignmentManagement.UI
             var priorityInput = Console.ReadLine();
             Priority chosenPriority;
 
+            // --- Process User Input ---
             if (string.IsNullOrWhiteSpace(priorityInput) ||
                 !Enum.TryParse<Priority>(priorityInput, true, out chosenPriority)) // true to ignore case
             {
@@ -79,9 +82,12 @@ namespace AssignmentManagement.UI
                 Console.WriteLine("Invalid or empty priority, defaulting to Medium.");
             }
 
+            // --- Get User Input ---
             Console.Write("Enter optional due date (e.g., yyyy-MM-dd, or leave blank if none): ");
             var dueDateInput = Console.ReadLine();
             DateTime? dueDate = null;
+
+            // --- Process User Input ---
             if (!string.IsNullOrWhiteSpace(dueDateInput))
             {
                 // Using TryParse with current culture. For specific format, use TryParseExact.
@@ -96,9 +102,11 @@ namespace AssignmentManagement.UI
                 }
             }
 
+            // --- Get User Input ---
             Console.Write("Enter optional notes for the assignment: ");
             var notes = Console.ReadLine();
 
+            // --- Create and Add Assignment ---
             try
             {
                 var assignment = new Assignment(title, description, dueDate, chosenPriority, notes);
@@ -130,9 +138,7 @@ namespace AssignmentManagement.UI
             Console.WriteLine("\n--- All Assignments ---");
             foreach (var assignment in assignments)
             {
-                Console.WriteLine(assignment.ToString());
-                Console.WriteLine($"  Status: {(assignment.IsCompleted ? "Completed" : "Incomplete")}{(assignment.IsOverdue(_logger) ? " - OVERDUE" : "")}");
-                Console.WriteLine();
+                DisplayAssignmentDetails(assignment);
             }
             Console.WriteLine("-----------------------");
         }
@@ -149,9 +155,7 @@ namespace AssignmentManagement.UI
             Console.WriteLine("\n--- Incomplete Assignments ---");
             foreach (var assignment in assignments)
             {
-                Console.WriteLine(assignment.ToString());
-                Console.WriteLine($"  Status: {(assignment.IsCompleted ? "Completed" : "Incomplete")}{(assignment.IsOverdue(_logger) ? " - OVERDUE" : "")}");
-                Console.WriteLine(); 
+                DisplayAssignmentDetails(assignment);
             }
             Console.WriteLine("----------------------------");
         }
@@ -358,6 +362,14 @@ namespace AssignmentManagement.UI
                 _logger.LogWarning($"Invalid selection input: '{input}'.");
                 Console.WriteLine($"Invalid choice. Please enter a number from 1 to {assignmentCount} or 0 to cancel.");
             }
+        }
+
+        // Helper method for displaying assignments
+        private void DisplayAssignmentDetails(Assignment assignment)
+        {
+            Console.WriteLine(assignment.ToString());
+            Console.WriteLine($"  Status: {(assignment.IsCompleted ? "Completed" : "Incomplete")}{(assignment.IsOverdue(_logger) ? " - OVERDUE" : "")}");
+            Console.WriteLine();
         }
     }
 }

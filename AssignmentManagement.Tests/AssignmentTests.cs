@@ -18,7 +18,14 @@
         [Fact]
         public void Constructor_ValidInput_ShouldCreateAssignment()
         {
+            // Arrange
+            var title = "Read Chapter 2";
+            var description = "Summarize key points";
+
+            // Act
             var assignment = new Assignment("Read Chapter 2", "Summarize key points", null, Priority.Medium, null);
+
+            // Assert
             Assert.Equal("Read Chapter 2", assignment.Title);
             Assert.Equal("Summarize key points", assignment.Description);
             Assert.False(assignment.IsCompleted);
@@ -30,6 +37,10 @@
         [Fact]
         public void Constructor_BlankTitle_ShouldThrowException()
         {
+            // Arrange
+            var action = () => new Assignment("", "Valid description", null, Priority.Medium, null);
+
+            // Act & Assert
             Assert.Throws<ArgumentException>(() => new Assignment("", "Valid description", null, Priority.Medium, null));
         }
 
@@ -43,22 +54,33 @@
         [Fact]
         public void MarkComplete_SetsIsCompletedToTrue()
         {
+            // Arrange
             var assignment = new Assignment("Task", "Complete the lab", null, Priority.Medium, null);
+            
+            // Act
             assignment.MarkComplete();
+
+            // Assert
             Assert.True(assignment.IsCompleted);
         }
 
         [Fact]
         public void Assignment_HasDefaultPriority()
         {
-            var assignment = new Assignment("Task 1", "Details", null, Priority.Medium, null);
+            // Arrange
+            var assignment = new Assignment("Task 1", "Details", null);
+
+            // Act & Assert
             Assert.Equal(Priority.Medium, assignment.Priority);
         }
 
         [Fact]
         public void Assignment_AcceptsHighPriority()
         {
-            var assignment = new Assignment("Urgent Task", "Do it now", null, Priority.High, null);
+            // Arrange
+            var assignment = new Assignment("Urgent Task", "Do it now", null, Priority.High);
+
+            // Act & Assert
             Assert.Equal(Priority.High, assignment.Priority);
         }
 

@@ -45,7 +45,7 @@ public class AssignmentApiTests : IClassFixture<WebApplicationFactory<Program>>
                 {
                     services.Remove(descriptor);
                 }
-                services.RemoveAll<IAppLogger>(); // Remove StubAppLogger if already added by base Program.cs
+                services.RemoveAll<IAppLogger>(); 
                 services.AddSingleton<IAppLogger, ConsoleAppLogger>(); // Use the real console logger
 
                 services.AddSingleton<IAssignmentFormatter, StubAssignmentFormatter>(); 
@@ -202,7 +202,7 @@ public class AssignmentApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task GetAssignmentByTitle_ReturnsAssignmentWithNotes() // Renamed for clarity or make a new one
+    public async Task GetAssignmentByTitle_ReturnsAssignmentWithNotes()
     {
         // Arrange
         var uniqueTitle = "API Get Single Notes " + Guid.NewGuid();

@@ -22,7 +22,10 @@ namespace AssignmentManagement.WebAPI.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        // Get all assignments
+        /// <summary>
+        /// Gets all assignments in the system.
+        /// </summary>
+        /// <returns>A list of all assignments.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(List<Assignment>), StatusCodes.Status200OK)]
         public IActionResult GetAllAssignments()
@@ -103,7 +106,11 @@ namespace AssignmentManagement.WebAPI.Controllers
             }
         }
 
-        // Get an assignment by title
+        /// <summary>
+        /// Gets a single assignment by its unique title.
+        /// </summary>
+        /// <param name="title">The title of the assignment to retrieve.</param>
+        /// <returns>The found assignment, or a 404 Not Found response.</returns>
         [HttpGet("{title}", Name = "GetAssignmentByTitle")]
         [ProducesResponseType(typeof(Assignment), 200)]
         [ProducesResponseType(404)] // Not Found
@@ -125,7 +132,73 @@ namespace AssignmentManagement.WebAPI.Controllers
             return Ok(assignment);
         }
 
-        // Delete an assignment
+        /// <summary>
+        /// Updates an existing assignment's title and description.
+        /// </summary>
+        /// <param name="title">The original title of the assignment to update.</param>
+        /// <param name="assignmentDto">The DTO containing the new title and description for the assignment.</param>
+        /// <returns>
+        /// A 204 No Content response if the update is successful.
+        /// A 400 Bad Request if the request body is invalid.
+        /// A 404 Not Found if no assignment with the original title exists.
+        /// A 409 Conflict if the new title already belongs to another assignment.
+        /// </returns>
+        [HttpPut("{title}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public IActionResult UpdateAssignment(string title, [FromBody] AssignmentUpdateDto assignmentDto)
+        {
+            _logger.LogInformation($"API: UpdateAssignment called for original title: '{title}'.");
+
+            // The [ApiController] attribute automatically handles model validation
+            // and will return a 400 Bad Request if the DTO is invalid.
+
+            // Call the existing service method.
+            // The 'title' from the URL is the oldTitle.
+            // The Title and Description from the DTO are the new values.
+            bool success = _assignmentService.UpdateAssignment(title, assignmentDto.Title, assignmentDto.Description);
+
+            if (success)
+            {
+                // HTTP 204 No Content is the standard response for a successful PUT request
+                // that doesn't need to return any data.
+                _logger.LogInformation($"API: Successfully updated assignment originally titled '{title}'.");
+                return NoContent();
+            }
+            else
+            {
+                // The service layer returns false if the original title isn't found
+                // or if the new title creates a conflict.
+                // We can check if the new title exists to return a more specific error.
+                if (_assignmentService.FindAssignmentByTitle(assignmentDto.Title) != null && !title.Equals(assignmentDto.Title, StringComparison.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning($"API: Failed to update assignment. New title '{assignmentDto.Title}' already exists.");
+                    return Conflict(new ProblemDetails
+                    {
+                        Title = "Update failed due to title conflict.",
+                        Detail = $"An assignment with the title '{assignmentDto.Title}' already exists.",
+                        Status = StatusCodes.Status409Conflict
+                    });
+                }
+
+                // If it wasn't a conflict, the original assignment likely wasn't found.
+                _logger.LogWarning($"API: Failed to update assignment. Original title '{title}' not found.");
+                return NotFound(new ProblemDetails
+                {
+                    Title = "Assignment not found.",
+                    Detail = $"No assignment with the title '{title}' could be found to update.",
+                    Status = StatusCodes.Status404NotFound
+                });
+            }
+        }
+
+        /// <summary>
+        /// Deletes an assignment by its title.
+        /// </summary>
+        /// <param name="title">The title of the assignment to delete.</param>
+        /// <returns>A 204 No Content response on success, or a 404 Not Found response.</returns>
         [HttpDelete("{title}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

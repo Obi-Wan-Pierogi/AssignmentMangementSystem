@@ -7,6 +7,8 @@ namespace AssignmentManagement.Core.Services
 {
     public class AssignmentService : IAssignmentService
     {
+        // Using OrdinalIgnoreCase ensures that assignment titles are treated as unique
+        // regardless of casing (e.g., "Task 1" is the same as "task 1").
         private readonly Dictionary<string, Assignment> _assignments =
             new Dictionary<string, Assignment>(StringComparer.OrdinalIgnoreCase);
 

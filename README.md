@@ -71,6 +71,7 @@ The Web API provides the following primary endpoints for interacting with assign
 * `GET /api/assignment/{title}`: Retrieves a single assignment by its title.
 * `POST /api/assignment`: Creates a new assignment. The request body should contain a JSON object with `title`, `description`, `priority`, `dueDate`, and `notes`.
 * `DELETE /api/assignment/{title}`: Deletes an assignment by its title.
+* `PUT /api/assignment/{title}` : Updates an existing assignment. The request body should contain the new title and description.
 
 ---
 

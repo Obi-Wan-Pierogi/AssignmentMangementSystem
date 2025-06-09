@@ -8,7 +8,7 @@ namespace AssignmentManagement.Console
 {
     internal class Program
     {
-        public static void Main(string[] args) // 🔥 Static Main method — this is required
+        public static void Main(string[] args) 
         {
             var services = new ServiceCollection();
 
@@ -16,7 +16,6 @@ namespace AssignmentManagement.Console
             services.AddSingleton<ConsoleUI>();
             services.AddSingleton<IAppLogger, ConsoleAppLogger>();
             services.AddSingleton<IAssignmentFormatter, AssignmentFormatter>();
-            services.AddSingleton<ConsoleUI>();
 
             var serviceProvider = services.BuildServiceProvider();
             var logger = serviceProvider.GetRequiredService<IAppLogger>();
